@@ -1,99 +1,98 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NAVASTRA-81 Tactical HUD</title>
+    <title>NAVASTRA-81 Tactical Briefing</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-        :root { --hud-green: #00ffcc; --glass-bg: rgba(15, 23, 42, 0.7); }
-        body { margin: 0; background: #020617; font-family: 'Segoe UI', system-ui, sans-serif; color: white; overflow: hidden; }
+        :root { --hud-cyan: #00f2ff; --glass: rgba(15, 23, 42, 0.9); }
+        body { margin: 0; background: #020617; font-family: 'Segoe UI', sans-serif; color: white; overflow: hidden; }
         model-viewer { width: 100vw; height: 100vh; --poster-color: transparent; }
 
-        /* HUD Top Banner */
-        .hud-header { position: absolute; top: 0; width: 100%; background: rgba(153, 27, 27, 0.8); border-bottom: 2px solid #ff3333; text-align: center; font-size: 11px; letter-spacing: 5px; padding: 8px 0; z-index: 100; font-weight: bold; }
-
-        /* HUD Title */
-        .hud-title { position: absolute; top: 45px; left: 25px; pointer-events: none; }
-        .hud-title h1 { margin: 0; font-size: 28px; letter-spacing: 2px; color: var(--hud-green); text-shadow: 0 0 15px var(--hud-green); }
-        .hud-title p { margin: 0; font-size: 12px; opacity: 0.8; text-transform: uppercase; }
-
+        .header { position: absolute; top: 0; width: 100%; background: #991b1b; text-align: center; font-size: 11px; letter-spacing: 5px; padding: 10px 0; z-index: 100; font-weight: bold; }
+        
         /* Interactive Hotspots */
-        .hotspot { background: none; border: 2px solid var(--hud-green); border-radius: 50%; width: 26px; height: 26px; cursor: pointer; box-shadow: 0 0 10px var(--hud-green); transition: all 0.3s; position: relative; }
-        .hotspot::after { content: ''; position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: var(--hud-green); border-radius: 50%; transform: translate(-50%, -50%); }
-        .hotspot:active { transform: scale(1.5); box-shadow: 0 0 20px var(--hud-green); }
+        .hotspot { background: none; border: 2px solid var(--hud-cyan); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; box-shadow: 0 0 15px var(--hud-cyan); position: relative; }
+        .hotspot::after { content: ''; position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; background: var(--hud-cyan); border-radius: 50%; transform: translate(-50%, -50%); }
 
-        /* Annotation Bubble - Mirroring User Image */
-        .annotation { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid rgba(0, 255, 204, 0.3); border-radius: 4px; color: white; font-size: 13px; padding: 15px; width: 280px; position: absolute; transform: translate(30px, -50%); opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-left: 4px solid var(--hud-green); }
-        .hotspot:active .annotation, .hotspot:focus .annotation { opacity: 1; visibility: visible; transform: translate(40px, -50%); }
+        /* Tactical Data Bubble */
+        .annotation { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--hud-cyan); border-radius: 4px; color: white; font-size: 14px; padding: 15px; width: 280px; position: absolute; transform: translate(40px, -50%); visibility: hidden; opacity: 0; transition: all 0.3s ease-out; border-left: 5px solid var(--hud-cyan); }
+        .hotspot.active .annotation { visibility: visible; opacity: 1; transform: translate(50px, -50%); }
+        .annotation strong { color: var(--hud-cyan); display: block; margin-bottom: 5px; text-transform: uppercase; }
 
-        .annotation strong { color: var(--hud-green); text-transform: uppercase; display: block; margin-bottom: 5px; }
-
-        /* Status Panel (Bottom Left) */
-        .status-panel { position: absolute; bottom: 30px; left: 25px; font-size: 11px; opacity: 0.6; letter-spacing: 1px; }
+        .footer { position: absolute; bottom: 20px; left: 25px; font-size: 12px; opacity: 0.6; }
     </style>
 </head>
 <body>
-    <div class="hud-header">RESTRICTED - NAVASTRA-81 OPERATIONAL BRIEFING</div>
-    <div class="hud-title"><h1>NAVASTRA-81</h1><p>Tactical Heavy-Lift Visualization</p></div>
+    <div class="header">RESTRICTED - NAVASTRA-81 TECHNICAL BRIEFING</div>
 
-    <model-viewer src="NAVASTRA_81_HighFidelity.glb" camera-controls auto-rotate shadow-intensity="1" stage-light-intensity="3" environment-intensity="2">
+    <model-viewer id="viewer" src="NAVASTRA_81_HighFidelity.glb" camera-controls auto-rotate shadow-intensity="1.5" stage-light-intensity="3" environment-intensity="2">
         
-        <!-- FRAME -->
-        <button class="hotspot" slot="hotspot-frame" data-position="0 80 15" data-normal="0 1 0">
+        <!-- FRAME & REDUNDANCY -->
+        <button class="hotspot" slot="hotspot-frame" data-position="0 100 15" data-normal="0 1 0">
             <div class="annotation">
-                <strong>Main Airframe</strong>
+                <strong>Platform Architecture</strong>
                 • Configuration: Hexacopter (6 Motors)<br>
-                • Advantage: Motor failure redundancy (Safe landing with 5/6 motors)<br>
-                • Material: Reinforced Carbon Fiber Hub[span_2](start_span)[span_2](end_span)
+                • Redundancy: 5/6 motors sustain 66% thrust for safe recovery[span_3](start_span)[span_3](end_span).
             </div>
         </button>
 
-        <!-- MOTORS -->
-        <button class="hotspot" slot="hotspot-motor" data-position="285 285 25" data-normal="1 0 0">
+        <!-- MOTORS & THRUST -->
+        <button class="hotspot" slot="hotspot-motor" data-position="290 290 20" data-normal="1 0 0">
             <div class="annotation">
-                <strong>Propulsion: BLDC Motor</strong>
+                <strong>BLDC Propulsion Unit</strong>
                 • Required Thrust: 12.67 kg per motor<br>
-                • Thrust-to-Weight (T/W): 2:1 recommended<br>
-                • Indigenous Status: Available domestically (<15 kg)[span_3](start_span)[span_3](end_span)
+                • T/W Ratio: ≥ 2:1 for maneuverability<br>
+                • Status: Indigenous Available (<15 kg)[span_4](start_span)[span_4](end_span).
             </div>
         </button>
 
         <!-- PROPELLERS -->
-        <button class="hotspot" slot="hotspot-prop" data-position="285 285 55" data-normal="0 0 1">
+        <button class="hotspot" slot="hotspot-prop" data-position="290 290 55" data-normal="0 0 1">
             <div class="annotation">
-                <strong>Propeller Specs</strong>
-                • Size: 13-15 inch Carbon Fiber<br>
-                • Pitch: Optimized for high-altitude lift<br>
-                • Status: Indian-made COTS components[span_4](start_span)[span_4](end_span)
+                <strong>Carbon Fiber Propellers</strong>
+                • Size: 13-15 inches optimized for AUW<br>
+                • Indigenous Status: Readily available COTS[span_5](start_span)[span_5](end_span).
             </div>
         </button>
 
-        <!-- PAYLOAD DROPPING MECHANISM -->
-        <button class="hotspot" slot="hotspot-drop" data-position="0 0 -35" data-normal="0 0 -1">
+        <!-- DROP MECHANISM -->
+        <button class="hotspot" slot="hotspot-mechanism" data-position="0 0 -40" data-normal="0 0 -1">
             <div class="annotation">
-                <strong>Dropping Mechanism</strong>
-                • Type: Servo-actuated modular rail<br>
-                • Function: Secure tactical delivery and remote release<br>
-                • Weight Budget: ~5-10% of total system[span_5](start_span)[span_5](end_span)
+                <strong>Drop Mechanism</strong>
+                • Type: High-precision servo clamp<br>
+                • Power Budget: ~5% of system total[span_6](start_span)[span_6](end_span).
             </div>
         </button>
 
         <!-- PAYLOAD -->
-        <button class="hotspot" slot="hotspot-payload" data-position="0 0 -85" data-normal="0 0 -1">
+        <button class="hotspot" slot="hotspot-payload" data-position="0 0 -100" data-normal="0 0 -1">
             <div class="annotation">
-                <strong>Tactical Payload Module</strong>
-                • Capacity: 10 kg Cargo<br>
-                • All-Up Weight (AUW): 38 kg (28kg Drone + 10kg Payload)<br>
-                • Role: Strategic supply / Loitering munitions transport[span_6](start_span)[span_6](end_span)
+                <strong>Tactical Mission Payload</strong>
+                • Capacity: 10 kg Cargo crate<br>
+                • Total AUW: 38 kg (28kg Drone + 10kg Payload)[span_7](start_span)[span_7](end_span).
             </div>
         </button>
 
     </model-viewer>
 
-    <div class="status-panel">
-        SWIPE TO ORBIT | PINCH TO ZOOM | TAP HUD HOTSPOTS FOR DATA<br>
-        ATMANIRBHAR BHARAT DEFENSE ROADMAP | PHASE I
-    </div>
+    <div class="footer">ATMANIRBHAR BHARAT DEFENSE ROADMAP | TAP POINTS FOR DATA</div>
+
+    <script>
+        const hotspots = document.querySelectorAll('.hotspot');
+        hotspots.forEach(h => {
+            h.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isActive = h.classList.contains('active');
+                hotspots.forEach(btn => btn.classList.remove('active'));
+                if (!isActive) h.classList.add('active');
+            });
+        });
+        document.getElementById('viewer').addEventListener('click', () => {
+            hotspots.forEach(btn => btn.classList.remove('active'));
+        });
+    </script>
 </body>
 </html>
