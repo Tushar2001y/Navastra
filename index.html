@@ -1,79 +1,56 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NAVASTRA-81 Tactical Briefing</title>
+    <title>NAVASTRA-81 Defense HUD</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-        :root { --hud-cyan: #00f2ff; --glass: rgba(15, 23, 42, 0.9); }
+        :root { --hud-cyan: #00f2ff; --glass-dark: rgba(15, 23, 42, 0.9); }
         body { margin: 0; background: #020617; font-family: 'Segoe UI', sans-serif; color: white; overflow: hidden; }
         model-viewer { width: 100vw; height: 100vh; --poster-color: transparent; }
 
-        .header { position: absolute; top: 0; width: 100%; background: #991b1b; text-align: center; font-size: 11px; letter-spacing: 5px; padding: 10px 0; z-index: 100; font-weight: bold; }
+        .banner { position: absolute; top: 0; width: 100%; background: #991b1b; text-align: center; font-size: 10px; letter-spacing: 5px; padding: 10px 0; z-index: 100; font-weight: bold; border-bottom: 2px solid #ff3333; }
         
-        /* Interactive Hotspots */
-        .hotspot { background: none; border: 2px solid var(--hud-cyan); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; box-shadow: 0 0 15px var(--hud-cyan); position: relative; }
+        .title { position: absolute; top: 50px; left: 30px; z-index: 10; pointer-events: none; }
+        .title h1 { margin: 0; font-size: 32px; color: var(--hud-cyan); text-shadow: 0 0 15px var(--hud-cyan); }
+
+        /* HUD Hotspots */
+        .hotspot { background: none; border: 2px solid var(--hud-cyan); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; box-shadow: 0 0 12px var(--hud-cyan); transition: all 0.3s; position: relative; }
         .hotspot::after { content: ''; position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; background: var(--hud-cyan); border-radius: 50%; transform: translate(-50%, -50%); }
 
-        /* Tactical Data Bubble */
-        .annotation { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--hud-cyan); border-radius: 4px; color: white; font-size: 14px; padding: 15px; width: 280px; position: absolute; transform: translate(40px, -50%); visibility: hidden; opacity: 0; transition: all 0.3s ease-out; border-left: 5px solid var(--hud-cyan); }
-        .hotspot.active .annotation { visibility: visible; opacity: 1; transform: translate(50px, -50%); }
-        .annotation strong { color: var(--hud-cyan); display: block; margin-bottom: 5px; text-transform: uppercase; }
+        /* Data Bubble Styling [as seen in image_2] */
+        .annotation { background: var(--glass-dark); backdrop-filter: blur(12px); border: 1px solid var(--hud-cyan); border-radius: 4px; color: white; font-size: 14px; padding: 15px; width: 280px; position: absolute; transform: translate(40px, -50%); visibility: hidden; opacity: 0; transition: all 0.4s; border-left: 5px solid var(--hud-cyan); box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .hotspot.active .annotation { visibility: visible; opacity: 1; transform: translate(55px, -50%); }
+        .annotation strong { color: var(--hud-cyan); display: block; margin-bottom: 5px; text-transform: uppercase; border-bottom: 1px solid rgba(0,242,255,0.2); padding-bottom: 3px; }
 
-        .footer { position: absolute; bottom: 20px; left: 25px; font-size: 12px; opacity: 0.6; }
+        .footer { position: absolute; bottom: 25px; left: 30px; font-size: 12px; opacity: 0.6; }
     </style>
 </head>
 <body>
-    <div class="header">RESTRICTED - NAVASTRA-81 TECHNICAL BRIEFING</div>
+    <div class="banner">RESTRICTED - NAVASTRA-81 TECHNICAL BRIEFING</div>
+    <div class="title"><h1>NAVASTRA-81</h1><p>INDIGENOUS PROPULSION & POWER SYSTEMS</p></div>
 
-    <model-viewer id="viewer" src="NAVASTRA_81_HighFidelity.glb" camera-controls auto-rotate shadow-intensity="1.5" stage-light-intensity="3" environment-intensity="2">
+    <model-viewer id="main-viewer" src="NAVASTRA_81_HD.glb" camera-controls auto-rotate shadow-intensity="2" stage-light-intensity="3" environment-intensity="2" exposure="1.2">
         
-        <!-- FRAME & REDUNDANCY -->
-        <button class="hotspot" slot="hotspot-frame" data-position="0 100 15" data-normal="0 1 0">
-            <div class="annotation">
-                <strong>Platform Architecture</strong>
-                • Configuration: Hexacopter (6 Motors)<br>
-                • Redundancy: 5/6 motors sustain 66% thrust for safe recovery[span_3](start_span)[span_3](end_span).
-            </div>
+        <button class="hotspot" slot="hotspot-frame" data-position="0 100 20" data-normal="0 1 0">
+            <div class="annotation"><strong>Main Airframe</strong>• Config: Hexacopter (6-Arm)<br>• Redundancy: Sustains flight with 5/6 motors (66% thrust available)[span_4](start_span)[span_4](end_span).</div>
         </button>
 
-        <!-- MOTORS & THRUST -->
-        <button class="hotspot" slot="hotspot-motor" data-position="290 290 20" data-normal="1 0 0">
-            <div class="annotation">
-                <strong>BLDC Propulsion Unit</strong>
-                • Required Thrust: 12.67 kg per motor<br>
-                • T/W Ratio: ≥ 2:1 for maneuverability<br>
-                • Status: Indigenous Available (<15 kg)[span_4](start_span)[span_4](end_span).
-            </div>
+        <button class="hotspot" slot="hotspot-motor" data-position="310 310 30" data-normal="1 0 0">
+            <div class="annotation"><strong>Propulsion: BLDC Motor</strong>• Required Thrust: 12.67 kg per motor<br>• T/W Ratio: 2:1 for maneuverability<br>• Status: Indigenous Available (<15 kg)[span_5](start_span)[span_5](end_span).</div>
         </button>
 
-        <!-- PROPELLERS -->
-        <button class="hotspot" slot="hotspot-prop" data-position="290 290 55" data-normal="0 0 1">
-            <div class="annotation">
-                <strong>Carbon Fiber Propellers</strong>
-                • Size: 13-15 inches optimized for AUW<br>
-                • Indigenous Status: Readily available COTS[span_5](start_span)[span_5](end_span).
-            </div>
+        <button class="hotspot" slot="hotspot-prop" data-position="310 310 60" data-normal="0 0 1">
+            <div class="annotation"><strong>Propeller Specifications</strong>• Size: 13-15 inch Carbon Fiber<br>• Pitch: Optimized for high-altitude lift<br>• Status: Indian-made COTS[span_6](start_span)[span_6](end_span).</div>
         </button>
 
-        <!-- DROP MECHANISM -->
-        <button class="hotspot" slot="hotspot-mechanism" data-position="0 0 -40" data-normal="0 0 -1">
-            <div class="annotation">
-                <strong>Drop Mechanism</strong>
-                • Type: High-precision servo clamp<br>
-                • Power Budget: ~5% of system total[span_6](start_span)[span_6](end_span).
-            </div>
+        <button class="hotspot" slot="hotspot-drop" data-position="0 0 -40" data-normal="0 0 -1">
+            <div class="annotation"><strong>Payload Dropping Mechanism</strong>• Type: High-precision servo-clamp<br>• Function: Tactical delivery and remote release[span_7](start_span)[span_7](end_span).</div>
         </button>
 
-        <!-- PAYLOAD -->
-        <button class="hotspot" slot="hotspot-payload" data-position="0 0 -100" data-normal="0 0 -1">
-            <div class="annotation">
-                <strong>Tactical Mission Payload</strong>
-                • Capacity: 10 kg Cargo crate<br>
-                • Total AUW: 38 kg (28kg Drone + 10kg Payload)[span_7](start_span)[span_7](end_span).
-            </div>
+        <button class="hotspot" slot="hotspot-payload" data-position="0 0 -110" data-normal="0 0 -1">
+            <div class="annotation"><strong>Mission Payload</strong>• Capacity: 10 kg Cargo crate<br>• Total AUW: 38 kg (28kg Drone + 10kg Payload)[span_8](start_span)[span_8](end_span).</div>
         </button>
 
     </model-viewer>
@@ -90,7 +67,7 @@
                 if (!isActive) h.classList.add('active');
             });
         });
-        document.getElementById('viewer').addEventListener('click', () => {
+        document.getElementById('main-viewer').addEventListener('click', () => {
             hotspots.forEach(btn => btn.classList.remove('active'));
         });
     </script>
