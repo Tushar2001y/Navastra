@@ -1,112 +1,99 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAVASTRA-81 | Interactive Defense Briefing</title>
-    <!-- Google's Model Viewer for high-fidelity 3D rendering -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NAVASTRA-81 Tactical HUD</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-        :root {
-            --primary-green: #10b981;
-            --alert-red: #991b1b;
-            --dark-bg: #0f172a;
-        }
-
-        body { margin: 0; background: radial-gradient(circle, #1e293b 0%, #0f172a 100%); font-family: 'Segoe UI', sans-serif; overflow: hidden; color: white; }
-        
-        /* Tactical Restricted Banner */
-        .top-banner { position: absolute; top: 0; width: 100%; background: var(--alert-red); color: white; text-align: center; font-size: 10px; letter-spacing: 4px; padding: 6px 0; z-index: 100; font-weight: bold; border-bottom: 1px solid #ff0000; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-
-        /* UI Overlay Elements */
-        .ui-overlay { position: absolute; top: 50px; left: 30px; pointer-events: none; z-index: 10; }
-        .ui-overlay h1 { margin: 0; font-size: 32px; letter-spacing: 2px; color: var(--primary-green); filter: drop-shadow(0 0 5px var(--primary-green)); }
-        .ui-overlay p { margin: 5px 0; opacity: 0.8; font-size: 14px; text-transform: uppercase; }
-
-        /* 3D Viewer Sizing */
+        :root { --hud-green: #00ffcc; --glass-bg: rgba(15, 23, 42, 0.7); }
+        body { margin: 0; background: #020617; font-family: 'Segoe UI', system-ui, sans-serif; color: white; overflow: hidden; }
         model-viewer { width: 100vw; height: 100vh; --poster-color: transparent; }
 
-        /* Interaction Hotspots (The clickable points) */
-        .hotspot { background: var(--primary-green); border-radius: 50%; border: 2px solid #ffffff; cursor: pointer; height: 26px; width: 26px; transition: all 0.3s ease; box-shadow: 0 0 15px var(--primary-green); }
-        .hotspot:hover { transform: scale(1.3); background: #34d399; }
-        .hotspot:not([data-visible]) { opacity: 0; pointer-events: none; }
+        /* HUD Top Banner */
+        .hud-header { position: absolute; top: 0; width: 100%; background: rgba(153, 27, 27, 0.8); border-bottom: 2px solid #ff3333; text-align: center; font-size: 11px; letter-spacing: 5px; padding: 8px 0; z-index: 100; font-weight: bold; }
 
-        /* Data Annotation Bubbles */
-        .annotation { background: rgba(255, 255, 255, 0.98); border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.7); color: #0f172a; display: block; font-size: 13px; padding: 15px; position: absolute; transform: translate(30px, -30px); width: 260px; pointer-events: none; visibility: hidden; opacity: 0; transition: opacity 0.4s; border-left: 6px solid var(--primary-green); line-height: 1.5; }
-        .hotspot:active .annotation, .hotspot:focus .annotation { visibility: visible; opacity: 1; }
+        /* HUD Title */
+        .hud-title { position: absolute; top: 45px; left: 25px; pointer-events: none; }
+        .hud-title h1 { margin: 0; font-size: 28px; letter-spacing: 2px; color: var(--hud-green); text-shadow: 0 0 15px var(--hud-green); }
+        .hud-title p { margin: 0; font-size: 12px; opacity: 0.8; text-transform: uppercase; }
 
-        /* Presentation Controls Guide */
-        .controls-hint { position: absolute; bottom: 30px; left: 30px; font-size: 11px; opacity: 0.5; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; }
-        
-        .footer-branding { position: absolute; bottom: 30px; right: 30px; font-size: 12px; opacity: 0.6; text-align: right; }
+        /* Interactive Hotspots */
+        .hotspot { background: none; border: 2px solid var(--hud-green); border-radius: 50%; width: 26px; height: 26px; cursor: pointer; box-shadow: 0 0 10px var(--hud-green); transition: all 0.3s; position: relative; }
+        .hotspot::after { content: ''; position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: var(--hud-green); border-radius: 50%; transform: translate(-50%, -50%); }
+        .hotspot:active { transform: scale(1.5); box-shadow: 0 0 20px var(--hud-green); }
+
+        /* Annotation Bubble - Mirroring User Image */
+        .annotation { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid rgba(0, 255, 204, 0.3); border-radius: 4px; color: white; font-size: 13px; padding: 15px; width: 280px; position: absolute; transform: translate(30px, -50%); opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-left: 4px solid var(--hud-green); }
+        .hotspot:active .annotation, .hotspot:focus .annotation { opacity: 1; visibility: visible; transform: translate(40px, -50%); }
+
+        .annotation strong { color: var(--hud-green); text-transform: uppercase; display: block; margin-bottom: 5px; }
+
+        /* Status Panel (Bottom Left) */
+        .status-panel { position: absolute; bottom: 30px; left: 25px; font-size: 11px; opacity: 0.6; letter-spacing: 1px; }
     </style>
 </head>
 <body>
-    <div class="top-banner">RESTRICTED - NAVASTRA-81 TECHNICAL BRIEFING DATA</div>
-    
-    <div class="ui-overlay">
-        <h1>NAVASTRA-81</h1>
-        <p>Tactical Heavy-Lift Visualization</p>
-    </div>
+    <div class="hud-header">RESTRICTED - NAVASTRA-81 OPERATIONAL BRIEFING</div>
+    <div class="hud-title"><h1>NAVASTRA-81</h1><p>Tactical Heavy-Lift Visualization</p></div>
 
-    <model-viewer src="NAVASTRA_81_Hexacopter.glb" 
-                  camera-controls 
-                  auto-rotate 
-                  shadow-intensity="2" 
-                  stage-light-intensity="3" 
-                  environment-intensity="2"
-                  exposure="1.2"
-                  interaction-prompt="auto">
+    <model-viewer src="NAVASTRA_81_HighFidelity.glb" camera-controls auto-rotate shadow-intensity="1" stage-light-intensity="3" environment-intensity="2">
         
-        <!-- Hotspot: Frame & Redundancy -->
-        <button class="hotspot" slot="hotspot-frame" data-position="0 150 15" data-normal="0 1 0">
+        <!-- FRAME -->
+        <button class="hotspot" slot="hotspot-frame" data-position="0 80 15" data-normal="0 1 0">
             <div class="annotation">
-                <strong>HEXACOPTER ARCHITECTURE</strong><br>
-                Engineered for combat redundancy. If one motor fails, the remaining five sustain 66% thrust, ensuring safe recovery[span_1](start_span)[span_1](end_span).
+                <strong>Main Airframe</strong>
+                • Configuration: Hexacopter (6 Motors)<br>
+                • Advantage: Motor failure redundancy (Safe landing with 5/6 motors)<br>
+                • Material: Reinforced Carbon Fiber Hub[span_2](start_span)[span_2](end_span)
             </div>
         </button>
 
-        <!-- Hotspot: Propulsion Specs -->
-        <button class="hotspot" slot="hotspot-motor" data-position="260 260 20" data-normal="1 0 0">
+        <!-- MOTORS -->
+        <button class="hotspot" slot="hotspot-motor" data-position="285 285 25" data-normal="1 0 0">
             <div class="annotation">
-                <strong>INDIGENOUS PROPULSION</strong><br>
-                • Thrust: 12.67 kg per motor[span_2](start_span)[span_2](end_span)<br>
-                • T/W Ratio: 2:1 recommended[span_3](start_span)[span_3](end_span)<br>
-                • Propellers: 13-15" Carbon Fiber[span_4](start_span)[span_4](end_span)<br>
-                • Motor Status: Domestically Available[span_5](start_span)[span_5](end_span)
+                <strong>Propulsion: BLDC Motor</strong>
+                • Required Thrust: 12.67 kg per motor<br>
+                • Thrust-to-Weight (T/W): 2:1 recommended<br>
+                • Indigenous Status: Available domestically (<15 kg)[span_3](start_span)[span_3](end_span)
             </div>
         </button>
 
-        <!-- Hotspot: Energy System -->
-        <button class="hotspot" slot="hotspot-battery" data-position="0 0 -35" data-normal="0 0 -1">
+        <!-- PROPELLERS -->
+        <button class="hotspot" slot="hotspot-prop" data-position="285 285 55" data-normal="0 0 1">
             <div class="annotation">
-                <strong>POWER SYSTEM</strong><br>
-                • High-Capacity 30,000 mAh Pack[span_6](start_span)[span_6](end_span)<br>
-                • 80-90% Power for Propulsion[span_7](start_span)[span_7](end_span)<br>
-                • Integrated Smart BMS Protection[span_8](start_span)[span_8](end_span)
+                <strong>Propeller Specs</strong>
+                • Size: 13-15 inch Carbon Fiber<br>
+                • Pitch: Optimized for high-altitude lift<br>
+                • Status: Indian-made COTS components[span_4](start_span)[span_4](end_span)
             </div>
         </button>
 
-        <!-- Hotspot: Tactical Payload -->
+        <!-- PAYLOAD DROPPING MECHANISM -->
+        <button class="hotspot" slot="hotspot-drop" data-position="0 0 -35" data-normal="0 0 -1">
+            <div class="annotation">
+                <strong>Dropping Mechanism</strong>
+                • Type: Servo-actuated modular rail<br>
+                • Function: Secure tactical delivery and remote release<br>
+                • Weight Budget: ~5-10% of total system[span_5](start_span)[span_5](end_span)
+            </div>
+        </button>
+
+        <!-- PAYLOAD -->
         <button class="hotspot" slot="hotspot-payload" data-position="0 0 -85" data-normal="0 0 -1">
             <div class="annotation">
-                <strong>MODULAR PAYLOAD</strong><br>
-                • Payload Weight: 10 kg[span_9](start_span)[span_9](end_span)<br>
-                • Drone Weight: 28 kg[span_10](start_span)[span_10](end_span)<br>
-                • All-Up Weight (AUW): 38 kg[span_11](start_span)[span_11](end_span)
+                <strong>Tactical Payload Module</strong>
+                • Capacity: 10 kg Cargo<br>
+                • All-Up Weight (AUW): 38 kg (28kg Drone + 10kg Payload)<br>
+                • Role: Strategic supply / Loitering munitions transport[span_6](start_span)[span_6](end_span)
             </div>
         </button>
 
     </model-viewer>
 
-    <div class="controls-hint">
-        SWIPE TO ROTATE | PINCH TO ZOOM | TAP POINTS FOR DATA
-    </div>
-
-    <div class="footer-logo">
-        ATMANIRBHAR BHARAT DEFENSE ROADMAP<br>
-        Briefing Date: 2026-05-06
+    <div class="status-panel">
+        SWIPE TO ORBIT | PINCH TO ZOOM | TAP HUD HOTSPOTS FOR DATA<br>
+        ATMANIRBHAR BHARAT DEFENSE ROADMAP | PHASE I
     </div>
 </body>
 </html>
