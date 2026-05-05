@@ -3,26 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NAVASTRA-81 Tactical HUD</title>
+    <title>NAVASTRA-81 Tactical Briefing</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
         :root { --hud-cyan: #00f2ff; --glass: rgba(15, 23, 42, 0.94); }
         body { margin: 0; background: #020617; font-family: 'Segoe UI', sans-serif; color: white; overflow: hidden; }
         model-viewer { width: 100vw; height: 100vh; --poster-color: transparent; }
 
-        /* Tactical Header */
         .header { position: absolute; top: 0; width: 100%; background: #991b1b; text-align: center; font-size: 11px; letter-spacing: 5px; padding: 10px 0; z-index: 100; font-weight: bold; border-bottom: 2px solid #ff3333; }
         
-        /* HUD UI */
         .title-block { position: absolute; top: 55px; left: 35px; z-index: 10; pointer-events: none; }
         .title-block h1 { margin: 0; font-size: 34px; color: var(--hud-cyan); text-shadow: 0 0 15px var(--hud-cyan); }
-        .title-block p { margin: 0; font-size: 12px; opacity: 0.8; letter-spacing: 2px; text-transform: uppercase; }
+        .title-block p { margin: 0; font-size: 12px; opacity: 0.8; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* Interaction Hotspots */
-        .hotspot { background: none; border: 2px solid var(--hud-cyan); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; box-shadow: 0 0 15px var(--hud-cyan); position: relative; transition: all 0.3s; }
+        /* HUD Hotspots */
+        .hotspot { background: none; border: 2px solid var(--hud-cyan); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; box-shadow: 0 0 15px var(--hud-cyan); position: relative; transition: transform 0.3s ease; }
         .hotspot::after { content: ''; position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; background: var(--hud-cyan); border-radius: 50%; transform: translate(-50%, -50%); }
 
-        /* Click-to-Reveal Annotation */
+        /* Tactical Data Bubble */
         .annotation { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--hud-cyan); border-radius: 4px; color: white; font-size: 14px; padding: 18px; width: 300px; position: absolute; transform: translate(45px, -50%); visibility: hidden; opacity: 0; transition: all 0.4s; border-left: 6px solid var(--hud-cyan); box-shadow: 0 15px 40px rgba(0,0,0,0.8); z-index: 1000; pointer-events: none; }
         .hotspot.active .annotation { visibility: visible; opacity: 1; transform: translate(60px, -50%); }
         .annotation strong { color: var(--hud-cyan); display: block; margin-bottom: 8px; text-transform: uppercase; border-bottom: 1px solid rgba(0,242,255,0.3); padding-bottom: 4px; }
@@ -34,55 +32,53 @@
     <div class="header">RESTRICTED - NAVASTRA-81 TECHNICAL BRIEFING</div>
     <div class="title-block"><h1>NAVASTRA-81</h1><p>Indigenous Defense Capability</p></div>
 
-    <model-viewer id="v" 
-                  src="https://docs.google.com/uc?export=download&id=1aDVRe1yXy7LLsiOqcsgO4NHaVUXPH_Fs" 
+    <model-viewer id="viewer" 
+                  src="https://raw.githubusercontent.com/Tushar2001y/Navastra/main/NAVASTRA_PRO-Optimized.glb" 
+                  draco-decoder-path="https://www.gstatic.com/draco/versioned/decoders/1.5.6/"
                   camera-controls 
                   auto-rotate 
                   shadow-intensity="2" 
-                  stage-light-intensity="3" 
-                  environment-intensity="2" 
                   exposure="1.3">
         
-        <!-- Platform Redundancy -->
+        <!-- Airframe Hotspot -->
         <button class="hotspot" slot="hotspot-frame" data-position="0 110 20" data-normal="0 1 0">
             <div class="annotation">
                 <strong>Main Airframe</strong>
-                • Configuration: Hexacopter (6-Arm Platform)<br>
+                • Config: Hexacopter (6-Arm Architecture)<br>
                 • Redundancy: 5/6 motors sustain 66% thrust for safe tactical landing.
             </div>
         </button>
 
-        <!-- Propulsion Parameters -->
+        <!-- Motor/Thrust Hotspot -->
         <button class="hotspot" slot="hotspot-motor" data-position="325 325 30" data-normal="1 0 0">
             <div class="annotation">
                 <strong>BLDC Propulsion Unit</strong>
                 • Required Thrust: 12.67 kg per motor<br>
-                • T/W Ratio: 2:1 for mission maneuverability<br>
-                • Status: Domestic supply chain qualified.
+                • Innovation: Indigenous fabrication focus.
             </div>
         </button>
 
-        <!-- Mission Payload -->
+        <!-- Payload Hotspot -->
         <button class="hotspot" slot="hotspot-payload" data-position="0 0 -120" data-normal="0 0 -1">
             <div class="annotation">
                 <strong>Tactical Payload Module</strong>
-                • Capacity: 10 kg Mission Cargo<br>
-                • Total AUW: 38 kg (28kg Drone + 10kg Payload).
+                • Mission Capacity: 10 kg Cargo<br>
+                • Logistics: 38 kg All-Up Weight (AUW).
             </div>
         </button>
 
-        <!-- Dropping Mechanism -->
+        <!-- Mechanism Hotspot -->
         <button class="hotspot" slot="hotspot-mech" data-position="0 0 -45" data-normal="0 0 -1">
             <div class="annotation">
                 <strong>Dropping Mechanism</strong>
-                • Type: High-precision servo-controlled clamp<br>
-                • Function: Remote strategic release and delivery.
+                • Type: High-precision servo-clamp<br>
+                • Control: RF and 5G-based ground control systems.
             </div>
         </button>
 
     </model-viewer>
 
-    <div class="footer">ATMANIRBHAR BHARAT DEFENSE ROADMAP | TAP POINTS FOR DATA REVEAL</div>
+    <div class="footer">ATMANIRBHAR BHARAT ROADMAP | TAP POINTS FOR DATA REVEAL</div>
 
     <script>
         const h = document.querySelectorAll('.hotspot');
@@ -94,7 +90,7 @@
                 if (!active) x.classList.add('active'); 
             }); 
         });
-        document.getElementById('v').addEventListener('click', () => { 
+        document.getElementById('viewer').addEventListener('click', () => { 
             h.forEach(btn => btn.classList.remove('active')); 
         });
     </script>
