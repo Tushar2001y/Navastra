@@ -2,33 +2,32 @@ import streamlit as st
 import streamlit.components.v1 as components
 import os
 
-# 1. Page Configuration for iPad Standalone View
+# Set page for iPad wide-view
 st.set_page_config(
-    page_title="NAVASTRA-81 Briefing",
+    page_title="NAVASTRA-81 TACTICAL",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# 2. Sidebar HUD with Technical Parameters
+# Military System Sidebar
 with st.sidebar:
-    st.header("Project NAVASTRA-81")
+    st.markdown("<h2 style='color: #ff0033;'>TACTICAL CONSOLE</h2>", unsafe_allow_html=True)
     st.divider()
-    st.subheader("Key Mission Specs")
-    st.metric(label="All-Up Weight (AUW)", value="38 kg") #
-    st.metric(label="Payload Capacity", value="10 kg") #
-    st.metric(label="Individual Motor Thrust", value="12.67 kg") #
+    st.subheader("System Telemetry")
+    st.metric(label="COMBAT AUW", value="38 KG", delta="READY") #
+    st.metric(label="PAYLOAD MAX", value="10 KG", delta="NOMINAL") #
+    st.metric(label="PROPULSION", value="12.67 KG/M", delta="STABLE") #
     st.divider()
-    st.caption("Strategic Focus: Drone Fabrication & loitering munitions integration.") #
+    st.warning("RESTRICTED DATA: Access Logged at USI Delhi Command.") #
 
-# 3. UI Styling - Remove Streamlit padding for full-screen effect
-st.markdown("<style>.block-container {padding: 0;}</style>", unsafe_allow_html=True)
+# Remove Streamlit default padding
+st.markdown("<style>.block-container {padding: 0; background: #010409;}</style>", unsafe_allow_html=True)
 
-# 4. Load and Render HTML
 def load_html():
     if os.path.exists("index.html"):
         with open("index.html", "r", encoding="utf-8") as f:
             return f.read()
-    return "<h3>Error: index.html not found. Check repository.</h3>"
+    return "<h3>CRITICAL ERROR: HUD DATA MISSING</h3>"
 
 html_code = load_html()
-components.html(html_code, height=1000, scrolling=False)
+components.html(html_code, height=1050)
