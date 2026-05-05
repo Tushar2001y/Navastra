@@ -14,14 +14,15 @@
         .header { position: absolute; top: 0; width: 100%; background: #991b1b; text-align: center; font-size: 11px; letter-spacing: 5px; padding: 10px 0; z-index: 100; font-weight: bold; border-bottom: 2px solid #ff3333; }
         
         /* HUD UI */
-        .title { position: absolute; top: 55px; left: 35px; z-index: 10; pointer-events: none; }
-        .title h1 { margin: 0; font-size: 34px; color: var(--hud-cyan); text-shadow: 0 0 15px var(--hud-cyan); }
+        .title-block { position: absolute; top: 55px; left: 35px; z-index: 10; pointer-events: none; }
+        .title-block h1 { margin: 0; font-size: 34px; color: var(--hud-cyan); text-shadow: 0 0 15px var(--hud-cyan); }
+        .title-block p { margin: 0; font-size: 12px; opacity: 0.8; letter-spacing: 2px; text-transform: uppercase; }
 
         /* Interaction Hotspots */
         .hotspot { background: none; border: 2px solid var(--hud-cyan); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; box-shadow: 0 0 15px var(--hud-cyan); position: relative; transition: all 0.3s; }
         .hotspot::after { content: ''; position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; background: var(--hud-cyan); border-radius: 50%; transform: translate(-50%, -50%); }
 
-        /* Click-to-Reveal Annotation[span_1](start_span)[span_1](end_span) */
+        /* Click-to-Reveal Annotation */
         .annotation { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--hud-cyan); border-radius: 4px; color: white; font-size: 14px; padding: 18px; width: 300px; position: absolute; transform: translate(45px, -50%); visibility: hidden; opacity: 0; transition: all 0.4s; border-left: 6px solid var(--hud-cyan); box-shadow: 0 15px 40px rgba(0,0,0,0.8); z-index: 1000; pointer-events: none; }
         .hotspot.active .annotation { visibility: visible; opacity: 1; transform: translate(60px, -50%); }
         .annotation strong { color: var(--hud-cyan); display: block; margin-bottom: 8px; text-transform: uppercase; border-bottom: 1px solid rgba(0,242,255,0.3); padding-bottom: 4px; }
@@ -31,29 +32,57 @@
 </head>
 <body>
     <div class="header">RESTRICTED - NAVASTRA-81 TECHNICAL BRIEFING</div>
-    <div class="title"><h1>NAVASTRA-81</h1><p>INDIGENOUS DEFENSE CAPABILITY</p></div>
+    <div class="title-block"><h1>NAVASTRA-81</h1><p>Indigenous Defense Capability</p></div>
 
-    <!-- Ensure your file is named NAVASTRA_PRO.glb in GitHub -->
-    <model-viewer id="v" src="NAVASTRA_PRO.glb" camera-controls auto-rotate shadow-intensity="2" stage-light-intensity="3" environment-intensity="2" exposure="1.3">
+    <model-viewer id="v" 
+                  src="https://docs.google.com/uc?export=download&id=1aDVRe1yXy7LLsiOqcsgO4NHaVUXPH_Fs" 
+                  camera-controls 
+                  auto-rotate 
+                  shadow-intensity="2" 
+                  stage-light-intensity="3" 
+                  environment-intensity="2" 
+                  exposure="1.3">
         
-        <!-- Frame Hotspot -->
+        <!-- Platform Redundancy -->
         <button class="hotspot" slot="hotspot-frame" data-position="0 110 20" data-normal="0 1 0">
-            <div class="annotation"><strong>Main Airframe</strong>• Hexacopter Redundancy: 5/6 motors sustain 66% thrust[span_2](start_span)[span_2](end_span).<br>• Optimized for indigenous fabrication and innovation[span_3](start_span)[span_3](end_span).</div>
+            <div class="annotation">
+                <strong>Main Airframe</strong>
+                • Configuration: Hexacopter (6-Arm Platform)<br>
+                • Redundancy: 5/6 motors sustain 66% thrust for safe tactical landing.
+            </div>
         </button>
 
-        <!-- Motor Hotspot -->
+        <!-- Propulsion Parameters -->
         <button class="hotspot" slot="hotspot-motor" data-position="325 325 30" data-normal="1 0 0">
-            <div class="annotation"><strong>BLDC Propulsion Unit</strong>• Required Thrust: 12.67 kg per motor[span_4](start_span)[span_4](end_span).<br>• Status: Domestic supply chain qualified[span_5](start_span)[span_5](end_span).</div>
+            <div class="annotation">
+                <strong>BLDC Propulsion Unit</strong>
+                • Required Thrust: 12.67 kg per motor<br>
+                • T/W Ratio: 2:1 for mission maneuverability<br>
+                • Status: Domestic supply chain qualified.
+            </div>
         </button>
 
-        <!-- Payload Hotspot -->
+        <!-- Mission Payload -->
         <button class="hotspot" slot="hotspot-payload" data-position="0 0 -120" data-normal="0 0 -1">
-            <div class="annotation"><strong>Tactical Payload Module</strong>• Capacity: 10 kg Mission Cargo[span_6](start_span)[span_6](end_span).<br>• Total AUW: 38 kg[span_7](start_span)[span_7](end_span).</div>
+            <div class="annotation">
+                <strong>Tactical Payload Module</strong>
+                • Capacity: 10 kg Mission Cargo<br>
+                • Total AUW: 38 kg (28kg Drone + 10kg Payload).
+            </div>
+        </button>
+
+        <!-- Dropping Mechanism -->
+        <button class="hotspot" slot="hotspot-mech" data-position="0 0 -45" data-normal="0 0 -1">
+            <div class="annotation">
+                <strong>Dropping Mechanism</strong>
+                • Type: High-precision servo-controlled clamp<br>
+                • Function: Remote strategic release and delivery.
+            </div>
         </button>
 
     </model-viewer>
 
-    <div class="footer">ATMANIRBHAR BHARAT ROADMAP | TAP POINTS FOR DATA REVEAL</div>
+    <div class="footer">ATMANIRBHAR BHARAT DEFENSE ROADMAP | TAP POINTS FOR DATA REVEAL</div>
 
     <script>
         const h = document.querySelectorAll('.hotspot');
