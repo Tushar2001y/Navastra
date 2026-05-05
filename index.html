@@ -3,82 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NAVASTRA-81 Tactical Briefing</title>
+    <title>NAVASTRA-81 | TACTICAL HUD</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <style>
-        :root { --hud-cyan: #00f2ff; --glass: rgba(15, 23, 42, 0.94); }
-        body { margin: 0; background: #020617; font-family: 'Segoe UI', sans-serif; color: white; overflow: hidden; }
+        :root { 
+            --hud-cyan: #00f2ff; 
+            --warning-red: #ff0033;
+            --glass: rgba(10, 15, 25, 0.92); 
+        }
+        
+        body { margin: 0; background: #010409; font-family: 'JetBrains Mono', 'Courier New', monospace; color: white; overflow: hidden; }
+        
+        /* Scanline Overlay for CRT effect */
+        body::before {
+            content: " ";
+            position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 200; background-size: 100% 4px, 3px 100%; pointer-events: none;
+        }
+
         model-viewer { width: 100vw; height: 100vh; --poster-color: transparent; }
 
-        .header { position: absolute; top: 0; width: 100%; background: #991b1b; text-align: center; font-size: 11px; letter-spacing: 5px; padding: 10px 0; z-index: 100; font-weight: bold; border-bottom: 2px solid #ff3333; }
+        /* Military Header with Hazard Stripes */
+        .header { 
+            position: absolute; top: 0; width: 100%; 
+            background: repeating-linear-gradient(45deg, var(--warning-red), var(--warning-red) 10px, #991b1b 10px, #991b1b 20px);
+            text-align: center; font-size: 10px; letter-spacing: 6px; padding: 12px 0; z-index: 300; 
+            font-weight: 900; border-bottom: 2px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
         
-        .title-block { position: absolute; top: 55px; left: 35px; z-index: 10; pointer-events: none; }
-        .title-block h1 { margin: 0; font-size: 34px; color: var(--hud-cyan); text-shadow: 0 0 15px var(--hud-cyan); }
-        .title-block p { margin: 0; font-size: 12px; opacity: 0.8; text-transform: uppercase; letter-spacing: 2px; }
+        .title-block { position: absolute; top: 65px; left: 40px; z-index: 10; pointer-events: none; border-left: 4px solid var(--hud-cyan); padding-left: 15px; }
+        .title-block h1 { margin: 0; font-size: 38px; color: var(--hud-cyan); text-transform: uppercase; font-style: italic; }
+        .title-block p { margin: 0; font-size: 11px; color: var(--warning-red); font-weight: bold; letter-spacing: 3px; }
 
-        /* HUD Hotspots */
-        .hotspot { background: none; border: 2px solid var(--hud-cyan); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; box-shadow: 0 0 15px var(--hud-cyan); position: relative; transition: transform 0.3s ease; }
-        .hotspot::after { content: ''; position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; background: var(--hud-cyan); border-radius: 50%; transform: translate(-50%, -50%); }
+        /* Target Lock Hotspots */
+        .hotspot { 
+            background: none; border: 1px solid var(--hud-cyan); border-radius: 2px; width: 35px; height: 35px; 
+            cursor: pointer; position: relative; transition: all 0.2s; 
+        }
+        .hotspot::before, .hotspot::after {
+            content: ''; position: absolute; width: 8px; height: 8px; border-color: var(--warning-red); border-style: solid;
+        }
+        /* Corner Brackets for Military Look */
+        .hotspot::before { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+        .hotspot::after { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+        
+        .hotspot:active { border-color: var(--warning-red); transform: scale(1.2); }
 
-        /* Tactical Data Bubble */
-        .annotation { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--hud-cyan); border-radius: 4px; color: white; font-size: 14px; padding: 18px; width: 300px; position: absolute; transform: translate(45px, -50%); visibility: hidden; opacity: 0; transition: all 0.4s; border-left: 6px solid var(--hud-cyan); box-shadow: 0 15px 40px rgba(0,0,0,0.8); z-index: 1000; pointer-events: none; }
+        /* Tactical Annotation Box */
+        .annotation { 
+            background: var(--glass); border: 1px solid var(--hud-cyan); border-radius: 0px; 
+            color: white; font-size: 13px; padding: 20px; width: 310px; position: absolute; 
+            transform: translate(45px, -50%); visibility: hidden; opacity: 0; 
+            transition: all 0.3s; border-right: 8px solid var(--warning-red);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2); pointer-events: none;
+        }
         .hotspot.active .annotation { visibility: visible; opacity: 1; transform: translate(60px, -50%); }
-        .annotation strong { color: var(--hud-cyan); display: block; margin-bottom: 8px; text-transform: uppercase; border-bottom: 1px solid rgba(0,242,255,0.3); padding-bottom: 4px; }
+        .annotation strong { color: var(--hud-cyan); display: block; margin-bottom: 10px; font-size: 16px; border-bottom: 1px solid var(--hud-cyan); padding-bottom: 5px; }
 
-        .footer { position: absolute; bottom: 35px; left: 35px; font-size: 12px; opacity: 0.6; }
+        .footer { position: absolute; bottom: 40px; left: 40px; font-size: 10px; color: var(--hud-cyan); opacity: 0.8; letter-spacing: 1px; }
+        .coordinates { position: absolute; bottom: 40px; right: 40px; font-size: 10px; color: var(--warning-red); }
     </style>
 </head>
 <body>
-    <div class="header">RESTRICTED - NAVASTRA-81 TECHNICAL BRIEFING</div>
-    <div class="title-block"><h1>NAVASTRA-81</h1><p>Indigenous Defense Capability</p></div>
+    <div class="header">CLASSIFIED // EYES ONLY // NAVASTRA-81 TECHNICAL DATA</div>
+    <div class="title-block">
+        <h1>NAVASTRA-81</h1>
+        <p>SYSTEM STATUS: ACTIVE [V.4.02]</p>
+    </div>
 
-    <model-viewer id="viewer" 
+    <model-viewer id="v" 
                   src="https://raw.githubusercontent.com/Tushar2001y/Navastra/main/NAVASTRA_PRO-Optimized.glb" 
                   draco-decoder-path="https://www.gstatic.com/draco/versioned/decoders/1.5.6/"
-                  camera-controls 
-                  auto-rotate 
-                  shadow-intensity="2" 
-                  exposure="1.3">
+                  camera-controls auto-rotate shadow-intensity="2" exposure="1.4">
         
-        <!-- Airframe Hotspot -->
         <button class="hotspot" slot="hotspot-frame" data-position="0 110 20" data-normal="0 1 0">
             <div class="annotation">
-                <strong>Main Airframe</strong>
-                • Config: Hexacopter (6-Arm Architecture)<br>
-                • Redundancy: 5/6 motors sustain 66% thrust for safe tactical landing.
+                <strong>CORE ARCHITECTURE</strong>
+                • PLATFORM: HEXACOPTER (6-ARM)<br>
+                • REDUNDANCY: EMERGENCY RECOVERY AT 66% THRUST<br>
+                • STATUS: MISSION READY
             </div>
         </button>
 
-        <!-- Motor/Thrust Hotspot -->
         <button class="hotspot" slot="hotspot-motor" data-position="325 325 30" data-normal="1 0 0">
             <div class="annotation">
-                <strong>BLDC Propulsion Unit</strong>
-                • Required Thrust: 12.67 kg per motor<br>
-                • Innovation: Indigenous fabrication focus.
+                <strong>PROPULSION SYSTEM</strong>
+                • REQ. THRUST: 12.67 KG / MOTOR<br>
+                • FABRICATION: INDIGENOUS DOMESTIC SUPPLY<br>
+                • COOLING: PASSIVE AERO
             </div>
         </button>
 
-        <!-- Payload Hotspot -->
         <button class="hotspot" slot="hotspot-payload" data-position="0 0 -120" data-normal="0 0 -1">
             <div class="annotation">
-                <strong>Tactical Payload Module</strong>
-                • Mission Capacity: 10 kg Cargo<br>
-                • Logistics: 38 kg All-Up Weight (AUW).
-            </div>
-        </button>
-
-        <!-- Mechanism Hotspot -->
-        <button class="hotspot" slot="hotspot-mech" data-position="0 0 -45" data-normal="0 0 -1">
-            <div class="annotation">
-                <strong>Dropping Mechanism</strong>
-                • Type: High-precision servo-clamp<br>
-                • Control: RF and 5G-based ground control systems.
+                <strong>PAYLOAD MODULE</strong>
+                • MAX CAPACITY: 10 KG<br>
+                • TOTAL AUW: 38.00 KG<br>
+                • INTEGRATION: LOITERING MUNITIONS READY
             </div>
         </button>
 
     </model-viewer>
 
-    <div class="footer">ATMANIRBHAR BHARAT ROADMAP | TAP POINTS FOR DATA REVEAL</div>
+    <div class="footer">INPUT: TOUCH_ENGAGEMENT // NAVASTRA_81_HUD_ST_01</div>
+    <div class="coordinates">LAT: 28.6139° N // LONG: 77.2090° E</div>
 
     <script>
         const h = document.querySelectorAll('.hotspot');
@@ -90,7 +119,7 @@
                 if (!active) x.classList.add('active'); 
             }); 
         });
-        document.getElementById('viewer').addEventListener('click', () => { 
+        document.getElementById('v').addEventListener('click', () => { 
             h.forEach(btn => btn.classList.remove('active')); 
         });
     </script>
